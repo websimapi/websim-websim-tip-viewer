@@ -34,6 +34,51 @@ function extractProjectId(value) {
   }
 }
 
+async function fetchProjectBySlug(username, slug, version = null) {
+    const endpoint = version
+        ? `/api/v1/users/${username}/slugs/${slug}/revisions/${version}`
+        : `/api/v1/users/${username}/slugs/${slug}`;
+    const res = await fetch(endpoint);
+    if (!res.ok) throw new Error(`Failed to fetch slug: ${res.status}`);
+    return await res.json();
+}
+
+function parseWebSimUrl(value) {
+    try {
+        const url = new URL(value);
+        const pathname = url.pathname;
+        // /p/{id} or /p/{id}/{ver}
+        const projectMatch = pathname.match(/^\/p\/([a-zA-Z0-9_-]{6,})(?:\/(\d+))?$/);
+        if (projectMatch) return { type: 'project', id: projectMatch[1], version: projectMatch[2] ? parseInt(projectMatch[2]) : null };
+        // /@username/slug or /@username/slug/version
+        const slugMatch = pathname.match(/^\/@([a-zA-Z0-9_]{1,32})\/([a-zA-Z0-9-]{1,100})(?:\/(\d+))?$/);
+        if (slugMatch) return { type: 'slug', username: slugMatch[1], slug: slugMatch[2], version: slugMatch[3] ? parseInt(slugMatch[3]) : null };
+        // /@username (profile)
+        const profileMatch = pathname.match(/^\/@([a-zA-Z0-9_]{1,32})$/);
+        if (profileMatch) return { type: 'profile', username: profileMatch[1] };
+    } catch (e) {
+        // not a full URL
+    }
+    return null;
+}
+
+async function resolveProjectId(inputVal) {
+    // Try to interpret as URL first
+    const parsed = parseWebSimUrl(inputVal);
+    if (parsed) {
+        if (parsed.type === 'project') return parsed.id;
+        if (parsed.type === 'slug') {
+            const data = await fetchProjectBySlug(parsed.username, parsed.slug, parsed.version);
+            // API returns { project, project_revision } — project.id is the id we need
+            return data.project?.id;
+        }
+        // profile only -> no specific project
+        throw new Error('Profile URL provided; please supply a project slug or project URL.');
+    }
+    // fallback: treat as plain id
+    return inputVal.trim();
+}
+
 function renderTip(item) {
   const c = item.comment;
   const author = c.author || {};
@@ -114,11 +159,16 @@ async function fetchTips(after = null) {
 
 async function runLookup(e) {
   if (e) e.preventDefault();
-  projectId = extractProjectId(input.value);
-  if (!projectId) {
-    setStatus('Enter a project URL or id.');
+  try {
+    const raw = input.value;
+    if (!raw) { setStatus('Enter a project URL or id.'); return; }
+    setStatus('Resolving project identifier...');
+    projectId = await resolveProjectId(raw);
+  } catch (err) {
+    setStatus(err.message || 'Unable to resolve project id.');
     return;
   }
+  if (!projectId) { setStatus('Could not determine project id.'); return; }
   tipsList.innerHTML = '';
   endCursor = null;
   hasNext = false;
@@ -179,4 +229,3 @@ useCurrentBtn.addEventListener('click', async () => {
 });
 
 /* ...existing code... */
-
