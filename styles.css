@@ -120,3 +120,17 @@ header h1{margin:0 0 6px 0;font-weight:600}
 }
 .foot{margin-top:22px;color:var(--muted);font-size:13px}
 
+.prompt-box{
+  margin:14px 0;
+  padding:12px;
+  border:1px solid #eef2f7;
+  background:var(--card);
+  border-radius:8px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.prompt-box p{margin:0;flex:1;color:var(--muted);font-size:14px}
+.copy-prompt{
+  padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer;font-weight:600;
+}

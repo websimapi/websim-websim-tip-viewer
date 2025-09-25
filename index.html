@@ -26,6 +26,11 @@
       <p class="muted">Enter a websim project URL or project id to list tip comments and supporters.</p>
     </header>
 
+    <div id="promptBox" class="prompt-box" aria-live="polite">
+      <p id="implementPrompt">Given a Websim project URL or project id, resolve slugs by calling /api/v1/users/{username}/slugs/{slug} when necessary to obtain the canonical project id, then fetch comments for the project using /api/v1/projects/{id}/comments?only_tips=true (paginated via cursors), extract each tip's author (username, display_name, avatar_url), card_data.credits_spent, created_at, and raw_content (render images safely), and return a paginated list of supporters with amounts and sanitized comment HTML.</p>
+      <button id="copyPromptBtn" type="button" class="copy-prompt">Copy prompt</button>
+    </div>
+
     <form id="lookupForm" class="lookup">
       <input id="projectInput" placeholder="https://websim.com/projects/project_abc or project_abc" autocomplete="off" />
       <button type="submit">Lookup</button>
@@ -47,4 +52,3 @@
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
-

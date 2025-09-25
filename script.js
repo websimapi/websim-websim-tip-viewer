@@ -9,10 +9,14 @@ const tipsList = document.getElementById('tipsList');
 const pager = document.getElementById('pager');
 const loadMoreBtn = document.getElementById('loadMore');
 const useCurrentBtn = document.getElementById('useCurrent');
+const copyPromptBtn = document.getElementById('copyPromptBtn');
+const implementPrompt = document.getElementById('implementPrompt');
 
 let projectId = null;
 let endCursor = null;
 let hasNext = false;
+
+const PROMPT_TEXT = `Given a Websim project URL or project id, resolve slugs by calling /api/v1/users/{username}/slugs/{slug} when necessary to obtain the canonical project id, then fetch comments for the project using /api/v1/projects/{id}/comments?only_tips=true (paginated via cursors), extract each tip's author (username, display_name, avatar_url), card_data.credits_spent, created_at, and raw_content (render images safely), and return a paginated list of supporters with amounts and sanitized comment HTML.`;
 
 function setStatus(txt) {
   status.textContent = txt;
@@ -225,6 +229,17 @@ useCurrentBtn.addEventListener('click', async () => {
   } catch (err) {
     console.error(err);
     setStatus('Unable to get current project. Make sure this is run inside Websim.');
+  }
+});
+
+copyPromptBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(PROMPT_TEXT);
+    copyPromptBtn.textContent = 'Copied!';
+    setTimeout(() => { copyPromptBtn.textContent = 'Copy prompt'; }, 1800);
+  } catch (err) {
+    console.error('copy failed', err);
+    setStatus('Unable to copy prompt.');
   }
 });
 
