@@ -16,7 +16,7 @@ let projectId = null;
 let endCursor = null;
 let hasNext = false;
 
-const PROMPT_TEXT = `Given a Websim project URL or project id, resolve slugs by calling /api/v1/users/{username}/slugs/{slug} when necessary to obtain the canonical project id, then fetch comments for the project using /api/v1/projects/{id}/comments?only_tips=true (paginated via cursors), extract each tip's author (username, display_name, avatar_url), card_data.credits_spent, created_at, and raw_content (render images safely), and return a paginated list of supporters with amounts and sanitized comment HTML.`;
+const PROMPT_TEXT = `Given a Websim project URL or project id, resolve slugs by calling /api/v1/users/{username}/slugs/{slug} when necessary to obtain the canonical project id, then fetch comments for the project using /api/v1/projects/{id}/comments?only_tips=true (paginated via cursors), extract each tip's author (username, display_name, avatar_url), card_data.credits_spent, created_at, and raw_content (images safely), and return a paginated list of supporters with amounts and sanitized comment HTML.`;
 
 function setStatus(txt) {
   status.textContent = txt;
